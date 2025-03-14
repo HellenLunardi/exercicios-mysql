@@ -29,7 +29,7 @@ select * from film
 order by rental_duration asc
 limit 3;
 
---- JOINs
+-- JOINs
 
 select c.first_name, c.last_name, a.address, a.district 
 from customer as c
@@ -54,10 +54,10 @@ using(film_id)
 join actor a
 using(actor_id);
 
---- SBD 02
+-- SBD 02
 
 select concat('R$ ', format(sum(amount), 2)) as soma_pagamentos, 
-concat('R$ ', format(count(payment_id), 2)) as qtde_pagamento,
+format(count(payment_id), 2) as qtde_pagamento,
 concat('R$ ', format(avg(amount), 2)) as media_pagamento
 from payment;
 
@@ -70,17 +70,71 @@ group by country;
 select count(f.film_id), c.name
 from film f
 join film_category fc
-on f.film_id = fc.film_id
+using(film_id)
 join category c
-on c.category_id = fc.category_id
-group by name;
+using(category_id)
+group by (c.name);
+
+-- subquery
+
+use sakila;
+
+select title, length 
+from film 
+where 
+	length = (select max(length) from film);
 
 
+select title, rental_duration 
+from film
+where 
+	rental_duration > (select avg(rental_duration) from film); 
 
+-- stored procedure sem argumento
 
+delimiter //
+create procedure select_all_active_users ()
+begin
+	select * from customer
+    where active = 1;
+end//
+delimiter ;
 
+call select_all_active_users()
 
+-- procedure com argumento
 
+delimiter //
+create procedure get_movies_from_category (category_name varchar(100))
+begin
+	select f.title, c.name  
+    from film f
+    join film_category fc
+    using(film_id)
+    join category c
+    using(category_id)
+    where c.name = category_name;
+end//
+delimiter ;
+
+call get_movies_from_category("action");
+
+drop procedure if exists get_movies_from_category;
+
+DELIMITER //
+CREATE PROCEDURE get_films_rental_duration (rental_maior INT)
+BEGIN 
+	select title, rental_duration
+    from film
+    where rental_duration >= rental_maior;
+END//
+DELIMITER ;
+
+call get_films_rental_duration("6");
+
+drop procedure if exists get_films_rental_duration;
+
+-- Triggers
 
 
 
