@@ -136,6 +136,60 @@ drop procedure if exists get_films_rental_duration;
 
 -- Triggers
 
+use sakila;
+
+create trigger before_update_customer
+	before update on customer
+    for each row
+    set new.last_update = NOW();
+    
+update customer
+set first_name = "JOAQUIM"
+where customer_id = 2;
+
+select * from customer;
+
+-- VIEWS
+
+create view film_and_category
+as
+select f.film_id, f.title, c.name
+from film f
+join film_category fc
+using(film_id)
+join category c
+using(category_id);
+
+select * from film_and_category;
+-- where name = 'Action';
+
+create view customer_information as
+select c.first_name, c.last_name, a.address, a.district
+from customer c 
+join address a
+using(address_id);
+
+select * from customer_information;
+
+create view customer_info as
+select c.first_name, c.last_name, a.address, ct.city
+from customer c
+join address a
+using(address_id)
+join city ct
+using(city_id);
+
+select * from customer_info;
+
+
+
+
+
+
+
+
+
+
 
 
 
