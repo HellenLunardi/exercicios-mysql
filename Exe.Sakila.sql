@@ -181,12 +181,18 @@ using(city_id);
 
 select * from customer_info;
 
+-- Indices   
+use sakila;
 
+show index from film;
 
+explain select * from film
+where title = 'CAUSE DATE';
 
+create index idx_title 
+on film(title);
 
-
-
+drop index idx_title on film;
 
 
 
